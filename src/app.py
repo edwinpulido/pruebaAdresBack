@@ -150,15 +150,39 @@ def actualizar_requerimiento(id):
             set_clauses = []
             params = []
             for key, value in data.items():
-                if key in ['presupuesto', 'unidad', 'tipoBienServicio', 'cantidad', 'valorUnitario', 'valorTotal', 'proveedor', 'documentacion']:
-                    set_clauses.append(f"{key} = ?")
+                if key == 'presupuesto':
+                    set_clauses.append("presupuesto = ?")
+                    params.append(value)
+                elif key == 'unidad':
+                    set_clauses.append("unidad = ?")
+                    params.append(value)
+                elif key == 'tipoBienServicio':
+                    set_clauses.append("tipo_bien_servicio = ?")
+                    params.append(value)
+                elif key == 'cantidad':
+                    set_clauses.append("cantidad = ?")
+                    params.append(value)
+                elif key == 'valorUnitario':
+                    set_clauses.append("valor_unitario = ?")
+                    params.append(value)
+                elif key == 'valorTotal':
+                    set_clauses.append("valor_total = ?")
+                    params.append(value)
+                elif key == 'proveedor':
+                    set_clauses.append("proveedor = ?")
+                    params.append(value)
+                elif key == 'documentacion':
+                    set_clauses.append("documentacion = ?")
+                    params.append(value)
+                elif key == 'fechaAdquisicion':
+                    set_clauses.append("fecha_adquisicion = ?")
                     params.append(value)
             params.append(id)
             sql = f"UPDATE Requerimientos SET {', '.join(set_clauses)} WHERE id = ?"
             cursor.execute(sql, params)
             if cursor.rowcount > 0:
                 connection.commit()
-                cursor.execute("SELECT id, presupuesto, unidad, tipo_bien_servicio, cantidad, valor_unitario, valor_total, proveedor, documentacion FROM Requerimientos WHERE id = ?", id)
+                cursor.execute("SELECT id, presupuesto, unidad, tipo_bien_servicio, cantidad, valor_unitario, valor_total, fecha_adquisicion, proveedor, documentacion FROM Requerimientos WHERE id = ?", id)
                 updated_requerimiento = cursor.fetchone()
                 columns = [column[0] for column in cursor.description]
                 return jsonify(dict(zip(columns, updated_requerimiento)))
@@ -171,7 +195,6 @@ def actualizar_requerimiento(id):
             cursor.close()
             connection.close()
     return jsonify({'mensaje': 'Error al conectar a la base de datos'}), 500
-
 # PUT - Desactivar un requerimiento
 @app.route('/requerimientos/desactivar/<int:id>', methods=['PUT'])
 def desactivar_requerimiento(id):
